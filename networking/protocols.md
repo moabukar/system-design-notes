@@ -347,7 +347,7 @@
         - you can build a gRPC web proxy, where you can point your web app to the gRPC proxy and proxy will convert them into an actual gRPC course (like a sidecar pattern)
     - error handling (need to build your own, no native one)
     - no native browser support
-        - (gRPC is entrenched to HTTP/2, uses low level calls to HTTP/2 streams)
+        - (gRPC is entrenched to HTTP/2, uses low level calls to HTTP/2 streams
         - those APIs dont exist in the browser because hte browser doesn’t expose them
         - 
     - timeouts (pub/sub)
@@ -358,3 +358,49 @@
     - Spotify moved to gRPC eventually not because of limitation of Hermes but because they are isoalated. gRPC is most popular.
 
 - gRPC is most popular in microservices now. if 2 services want to talk to each other, the de-facto is gRPC.
+
+--------
+
+## **Many ways to HTTPS**
+
+**HTTP Communication basics**
+
+- Establish connection with backend
+- establish encryption (HTTPS right. TLS!)
+- Send data
+- Close connection (when done)
+
+**HTTPS over TCP with TLS1.2**
+
+- TCP connect (syn syn/ack ack) >> establish TCP connection
+- handshake (client hello, server hello, client fin, server fin) >> client and server do handshake in order to agree on symmetric key. They both do key exchange algorithm and both have the symmetric key for encrypting and decrypting
+- data send (GET /, 200 OK)
+
+**HTTPS over TCP with TLS 1.3**
+
+- same as HTTPS over TCP with TLS 1.2 but with one less roundtrip (on the key exchange part)
+- better to use TLS 1.3 unless you have a backward compatibility issue
+
+**HTTPS over QUIC aka HTTP/3** 
+
+- the 3 way handshake and the TLS handshake happens in the same router. It’s a matter of carrying the same packets in the same time
+- so we effectively combined TLS 1.3 with the handshake of QUIC
+- all of it is built on UDP
+- so all of the requests are a bunch of UDP segments - datagrams going back and forth
+
+**HTTPS over TFO with TLS 1.3 (TCP Fast Open, not really secure)**
+
+- 
+
+**HTTP over TCP with TLS1.3 0RTT (0 round trip)**
+
+- if a prior TLS connection existed between client and server, a pre shared key could have been shared to the client
+- 0 round trip so less waiting time so less latency
+
+**HTTPS over QUIC 0RTT**
+
+- if pre shared key was shared before and client knows about it, it can effectively send the QUIC handshake
+- This is the fastest you can go. You can set the connection req for QUIC, in the same breath, send TLS - use pre-shared key to encrypt and also send GET req in the same breath.
+- if this can be done, you can get extreme response time! very very fast
+- so far only Cloudflare can manage to do this effectively in their environment (read article by Cloudflare called “Even faster connection with QUIC 0-RTT resumption”
+- This is quite difficult to do but really fast.
