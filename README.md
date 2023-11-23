@@ -12,3 +12,10 @@
 
 - Nginx Deep dive
 - ECS Deep DIve
+
+
+## Article ideas to write
+
+- Fundamentals of DevOps & Engineering
+
+- Why using HTTP/2 can be less efficient?
